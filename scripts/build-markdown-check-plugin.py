@@ -138,7 +138,7 @@ def compile_script(wasm, command, tools):
 def archive_package(archive, package):
     with ZipFile(archive, "w") as zip_file:
         for path in sorted(package.iterdir()):
-            info = ZipInfo(f"{PACKAGE_NAME}/{path.name}")
+            info = ZipInfo(f"{package.name}/{path.name}")
             info.create_system = 3
             info.external_attr = 0o100644 << 16
             zip_file.writestr(info, path.read_bytes(), compress_type=ZIP_DEFLATED, compresslevel=9)
@@ -148,26 +148,32 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=BUILD,
                         help="artifact directory (default: .build/official-plugin-build)")
+    parser.add_argument("--wasm", action="store_true", help="package the binary module for Folra's WASM runner")
     args = parser.parse_args()
     output = args.output_dir.resolve()
     BUILD.mkdir(parents=True, exist_ok=True)
     output.mkdir(parents=True, exist_ok=True)
     wasm, notices = build_wasm()
-    with (TemporaryDirectory(prefix="tools-", dir=BUILD) as tools,
-          TemporaryDirectory(prefix=".markdown-check-", dir=output) as stage):
-        package = Path(stage) / PACKAGE_NAME
+    source_manifest = SOURCES / ("manifest-wasm.json" if args.wasm else "manifest.json")
+    version = json.loads(read(source_manifest))["version"]
+    package_name = f"MarkdownCheck-{version}.folraplug" if args.wasm else PACKAGE_NAME
+    with TemporaryDirectory(prefix=".markdown-check-", dir=output) as stage:
+        package = Path(stage) / package_name
         package.mkdir()
-        manifest = package / "manifest.json"
-        shutil.copyfile(SOURCES / manifest.name, manifest)
-        version = json.loads(read(manifest))["version"]
-        command = package / "command.js"
-        notices.extend(compile_script(wasm, command, Path(tools)))
+        shutil.copyfile(source_manifest, package / "manifest.json")
+        if args.wasm:
+            if not 8 <= wasm.stat().st_size <= 1024 * 1024:
+                raise ValueError("command.wasm must fit within the 1 MiB module limit")
+            shutil.copyfile(wasm, package / "command.wasm")
+        else:
+            with TemporaryDirectory(prefix="tools-", dir=BUILD) as tools:
+                notices.extend(compile_script(wasm, package / "command.js", Path(tools)))
         (package / NOTICE).write_text("Folra Markdown Check third-party licenses\n\n"
                                      + RULE.join(notices) + "\n", encoding="utf-8")
 
         archive = Path(stage) / f"MarkdownCheck-{version}.zip"
         archive_package(archive, package)
-        destination = output / PACKAGE_NAME
+        destination = output / package_name
         if destination.is_symlink():
             raise ValueError(f"Package destination is a symbolic link: {destination}")
         if destination.exists():

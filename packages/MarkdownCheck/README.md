@@ -65,6 +65,15 @@ python3 scripts/test-markdown-check.py "$folra_app" dist/plugins/MarkdownCheck.f
 
 Cargo 按 `Cargo.lock` 编译 WASM。Binaryen 123.0.0 将它转换成普通 JavaScript，Terser 5.44.0 压缩源码，fflate 0.8.2 压缩载荷并提供运行时解压。构建拒绝超过 256 KiB 的 `command.js`。npm 构建依赖及校验值锁定在 [npm-shrinkwrap.json](build/npm-shrinkwrap.json)。
 
+Markdown 检查 1.1.0 可在支持 WASM 的 Folra 测试版安装。构建和验收命令如下。
+
+```sh
+python3 scripts/build-markdown-check-plugin.py --wasm --output-dir dist/plugins
+python3 scripts/test-markdown-check.py "$folra_app" dist/plugins/MarkdownCheck-1.1.0.folraplug
+```
+
+使用 macOS x86_64 Rust 1.97.1 复刻批准包。清单声明 `runtime: "wasm"`，ZIP 携带原始 `command.wasm` 和许可证。批准摘要为 `25c60502b67eda8719a006c164b634348f36b8012e02ae58eb0f4d565ca7aeb2`。签名沙盒 XPC 直接加载这个模块。
+
 每次调用用独立线性内存。JavaScript 将输入编码为 UTF-8，Rust 持有输入和输出缓冲区。宿主的 QuickJS 工作进程负责取消、超时和内存限制。插件返回的错误使用 API 2 的 `unsupported-input` 错误码和固定短消息。
 
 Rust 测试覆盖四条规则、UTF-16 位置、CRLF、Folra 扩展、截断及 UTF-8 输入边界。构建先执行压缩后的 `command.js`，检查含 emoji 的输入是否返回正确的 UTF-16 偏移。签名宿主的 `plugin test` 再通过 QuickJS 工作进程运行八个用例，其中包括长文档和空文档。依赖来源见 [UPSTREAM.md](UPSTREAM.md)。
