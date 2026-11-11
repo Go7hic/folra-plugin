@@ -1,0 +1,42 @@
+{
+  "format": 2,
+  "api": 2,
+  "id": "app.folra.quick-templates",
+  "version": "1.0.0",
+  "name": "Quick Templates",
+  "scope": "document",
+  "ui": {
+    "schema": 1,
+    "fields": [
+      {
+        "kind": "dropdown",
+        "id": "template",
+        "label": "Template",
+        "default": "meeting_notes",
+        "options": [
+          { "value": "meeting_notes", "label": "Meeting notes" },
+          { "value": "reading_notes", "label": "Reading notes" },
+          { "value": "daily_journal", "label": "Daily journal" }
+        ]
+      },
+      {
+        "kind": "dropdown",
+        "id": "language",
+        "label": "Language",
+        "default": "en",
+        "options": [
+          { "value": "en", "label": "English" },
+          { "value": "zh_hans", "label": "简体中文" },
+          { "value": "ja", "label": "日本語" }
+        ]
+      },
+      {
+        "kind": "text",
+        "id": "title",
+        "label": "Title (optional)",
+        "default": "",
+        "maxLength": 120
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "format": 2,
+  "api": 2,
+  "id": "app.folra.chinese-typography",
+  "version": "1.0.0",
+  "name": "Chinese Typography",
+  "scope": "document",
+  "ui": {
+    "schema": 1,
+    "fields": [
+      { "kind": "toggle", "id": "spacing", "label": "Add spaces between Han and Latin letters or digits", "default": true },
+      { "kind": "toggle", "id": "punctuation", "label": "Use Chinese punctuation in Han prose", "default": false }
+    ]
+  }
+}

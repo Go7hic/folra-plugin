@@ -1,0 +1,30 @@
+[package]
+name = "folra-markdown-check"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Read-only Markdown diagnostics for Folra's official checker plugin"
+
+[lib]
+name = "folra_markdown_check"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pulldown-cmark = { version = "=0.13.6", default-features = false }
+serde_json = "1.0"
+
+[profile.dev]
+debug = 0
+incremental = false
+
+[profile.test]
+debug = 0
+incremental = false
+
+[profile.release]
+debug = 0
+incremental = false
+lto = true
+opt-level = "z"
+codegen-units = 1
+panic = "abort"

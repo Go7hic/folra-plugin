@@ -1,0 +1,822 @@
+[
+  {
+    "name": "Defaults use document UTF-16 offsets across emoji, supplementary Han and mixed line endings",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "中文ABC与123台,好了!\r\n😀汉A字𠀀B\r\n\r汉C\n  ",
+      "selection": {
+        "start": 1,
+        "end": 2
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 2, "end": 2, "text": " "},
+        {"start": 5, "end": 5, "text": " "},
+        {"start": 6, "end": 6, "text": " "},
+        {"start": 9, "end": 9, "text": " "},
+        {"start": 19, "end": 19, "text": " "},
+        {"start": 20, "end": 20, "text": " "},
+        {"start": 23, "end": 23, "text": " "},
+        {"start": 28, "end": 28, "text": " "}
+      ]
+    },
+    "expectedText": "中文 ABC 与 123 台,好了!\r\n😀汉 A 字𠀀 B\r\n\r汉 C\n  "
+  },
+  {
+    "name": "Combining marks and Han variation selectors stay attached; keycaps stay intact",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "汉é字葛󠄀Å文1️⃣字\n全角１２３字",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 1, "end": 1, "text": " "},
+        {"start": 3, "end": 3, "text": " "},
+        {"start": 7, "end": 7, "text": " "},
+        {"start": 8, "end": 8, "text": " "}
+      ]
+    },
+    "expectedText": "汉 é 字葛󠄀 Å 文1️⃣字\n全角１２３字"
+  },
+  {
+    "name": "Both toggles on with a plain ATX heading and no final newline",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "# 中文ABC版,第一3章!\r\n欢迎Folra使用.",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 4, "end": 4, "text": " "},
+        {"start": 7, "end": 7, "text": " "},
+        {"start": 8, "end": 9, "text": "，"},
+        {"start": 11, "end": 11, "text": " "},
+        {"start": 12, "end": 12, "text": " "},
+        {"start": 13, "end": 14, "text": "！"},
+        {"start": 18, "end": 18, "text": " "},
+        {"start": 23, "end": 23, "text": " "},
+        {"start": 25, "end": 26, "text": "。"}
+      ]
+    },
+    "expectedText": "# 中文 ABC 版，第一 3 章！\r\n欢迎 Folra 使用。"
+  },
+  {
+    "name": "Punctuation alone, with interior whitespace and a trailing Markdown hard break",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "A中文B 你好, 世界!下一句? 还有;后文:正文.  ",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": false,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 7, "end": 8, "text": "，"},
+        {"start": 11, "end": 12, "text": "！"},
+        {"start": 15, "end": 16, "text": "？"},
+        {"start": 19, "end": 20, "text": "；"},
+        {"start": 22, "end": 23, "text": "："},
+        {"start": 25, "end": 26, "text": "。"}
+      ]
+    },
+    "expectedText": "A中文B 你好， 世界！下一句？ 还有；后文：正文。  "
+  },
+  {
+    "name": "Punctuation leaves runs, mixed-language separators, decimals and ellipses alone",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "汉!! 汉?? 汉... 中文, English 版本3.14以及2,000项\n中文。 既有间距 A 与 42 个字",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": false,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {"kind": "noop"},
+    "expectedText": "汉!! 汉?? 汉... 中文, English 版本3.14以及2,000项\n中文。 既有间距 A 与 42 个字"
+  },
+  {
+    "name": "Both toggles off",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "你好ABC,世界!\r\n😀中文123.",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": false,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {"kind": "noop"},
+    "expectedText": "你好ABC,世界!\r\n😀中文123."
+  },
+  {
+    "name": "Already formatted",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "# 你好，世界！\r\n😀汉 A 字，版本 3.14 发布。",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {"kind": "noop"},
+    "expectedText": "# 你好，世界！\r\n😀汉 A 字，版本 3.14 发布。"
+  },
+  {
+    "name": "Empty document",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {"kind": "noop"},
+    "expectedText": ""
+  },
+  {
+    "name": "Plain decimals, existing tabs and spaces",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "版本3.14发布  已有\tA 和 B  字",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 2, "end": 2, "text": " "},
+        {"start": 6, "end": 6, "text": " "}
+      ]
+    },
+    "expectedText": "版本 3.14 发布  已有\tA 和 B  字"
+  },
+  {
+    "name": "YAML metadata with BOM, blank lines and dot terminator",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "﻿---\r\n标题: 中文ABC\r\n\r\n内容: 中文123,好了!\r\n...\r\n正文ABC!",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 41, "end": 41, "text": " "}
+      ]
+    },
+    "expectedText": "﻿---\r\n标题: 中文ABC\r\n\r\n内容: 中文123,好了!\r\n...\r\n正文 ABC!"
+  },
+  {
+    "name": "TOML metadata with plus delimiters",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "\n+++\n标题 = '中文ABC'\n描述 = '''\n中文123,你好!\n'''\n+++\n正文123.\n",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 47, "end": 47, "text": " "}
+      ]
+    },
+    "expectedText": "\n+++\n标题 = '中文ABC'\n描述 = '''\n中文123,你好!\n'''\n+++\n正文 123.\n"
+  },
+  {
+    "name": "Unterminated metadata protects the remainder",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "---\n标题: 中文ABC\n\n还在元数据123",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {"kind": "noop"},
+    "expectedText": "---\n标题: 中文ABC\n\n还在元数据123"
+  },
+  {
+    "name": "Backtick and tilde fences respect marker type, length and closing placement",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "````lang\n代码ABC\n```\n代码DEF\n  ````\n代码123\n````\n正文ABC\n~~~js\n代码DEF\n```\n代码123\n  ~~~\n正文123\n",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 45, "end": 45, "text": " "},
+        {"start": 79, "end": 79, "text": " "}
+      ]
+    },
+    "expectedText": "````lang\n代码ABC\n```\n代码DEF\n  ````\n代码123\n````\n正文 ABC\n~~~js\n代码DEF\n```\n代码123\n  ~~~\n正文 123\n"
+  },
+  {
+    "name": "Indented code, including a literal fence, does not hide later prose",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "    中文ABC\n    ```\n\t代码123\n\n正文ABC.",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 28, "end": 28, "text": " "}
+      ]
+    },
+    "expectedText": "    中文ABC\n    ```\n\t代码123\n\n正文 ABC."
+  },
+  {
+    "name": "Fences in list and quote containers",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "- ```js\n  代码ABC\n  ```\n> ~~~\n> 代码123\n> ~~~\n正文ABC",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 44, "end": 44, "text": " "}
+      ]
+    },
+    "expectedText": "- ```js\n  代码ABC\n  ```\n> ~~~\n> 代码123\n> ~~~\n正文 ABC"
+  },
+  {
+    "name": "Unclosed fence extends through EOF",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "正文ABC\n~~~\n代码123\n\n代码456,内容!",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 2, "end": 2, "text": " "}
+      ]
+    },
+    "expectedText": "正文 ABC\n~~~\n代码123\n\n代码456,内容!"
+  },
+  {
+    "name": "Inline and display math, including a multi-line body and same-line display math",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "$中文A=1$ 与正文ABC\r\n$$\r\n公式ABC,内容!\r\n\r\n公式123 $$\r\n$$中文A=1$$\r\n\\[\r\n公式B2\r\n\\]\r\n正文123!",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 70, "end": 70, "text": " "}
+      ]
+    },
+    "expectedText": "$中文A=1$ 与正文ABC\r\n$$\r\n公式ABC,内容!\r\n\r\n公式123 $$\r\n$$中文A=1$$\r\n\\[\r\n公式B2\r\n\\]\r\n正文 123!"
+  },
+  {
+    "name": "Inline code, Markdown links and images, and Wiki links protect entire lines",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "``中文A ` 中文B`` 正文ABC\n[链接ABC](中文A.md \"标题123\")\n![中文ABC](图片123.png)\n[[中文ABC|别名123]] 旁边ABC\n正文123",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 88, "end": 88, "text": " "}
+      ]
+    },
+    "expectedText": "``中文A ` 中文B`` 正文ABC\n[链接ABC](中文A.md \"标题123\")\n![中文ABC](图片123.png)\n[[中文ABC|别名123]] 旁边ABC\n正文 123"
+  },
+  {
+    "name": "Multiline inline code, link labels and destinations, Wiki links and reference titles",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "有`代码ABC\n中文ABC\n结束`\n\n[链接ABC\n中文123](\n目标ABC\n)\n\n[[链接ABC\n别名123]]\n\n[引用ABC]:\n  <目标123>\n  \"描述ABC\"\n\n正文ABC",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 92, "end": 92, "text": " "}
+      ]
+    },
+    "expectedText": "有`代码ABC\n中文ABC\n结束`\n\n[链接ABC\n中文123](\n目标ABC\n)\n\n[[链接ABC\n别名123]]\n\n[引用ABC]:\n  <目标123>\n  \"描述ABC\"\n\n正文 ABC"
+  },
+  {
+    "name": "Raw HTML comments and nested tags remain untouched through blank lines",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "<!-- 注释ABC\n\n中文123!\n-->\n\n<div>\n<div>\n中文ABC\n</div>\n<!-- </div>\n中文ABC -->\n\n中文123!\n</div>\n\n正文ABC!",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 89, "end": 89, "text": " "}
+      ]
+    },
+    "expectedText": "<!-- 注释ABC\n\n中文123!\n-->\n\n<div>\n<div>\n中文ABC\n</div>\n<!-- </div>\n中文ABC -->\n\n中文123!\n</div>\n\n正文 ABC!"
+  },
+  {
+    "name": "Folra container fence",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "::: note\n注记ABC\n\n注记123!\n:::\n正文ABC",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 29, "end": 29, "text": " "}
+      ]
+    },
+    "expectedText": "::: note\n注记ABC\n\n注记123!\n:::\n正文 ABC"
+  },
+  {
+    "name": "Table rows, escaped punctuation, URLs, email and field-like source stay unchanged",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "| 中文ABC | 版本123 |\r\n| :--- | ---: |\r\n| 行ABC | 值123 |\r\n中文ABC \\! 正文123\r\n正文ABC https://例子.example/中文ABC?值=中文123\r\n网址例子.中国 跟着ABC\r\nwww.example.com中文\r\ncafé.com中文\r\n中文ABC foo@example.com\r\nmailto:中文ABC\r\n连接192.168.0.1中文\r\n标题: 中文ABC\r\n正文ABC!",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 223, "end": 223, "text": " "}
+      ]
+    },
+    "expectedText": "| 中文ABC | 版本123 |\r\n| :--- | ---: |\r\n| 行ABC | 值123 |\r\n中文ABC \\! 正文123\r\n正文ABC https://例子.example/中文ABC?值=中文123\r\n网址例子.中国 跟着ABC\r\nwww.example.com中文\r\ncafé.com中文\r\n中文ABC foo@example.com\r\nmailto:中文ABC\r\n连接192.168.0.1中文\r\n标题: 中文ABC\r\n正文 ABC!"
+  },
+  {
+    "name": "Exactly 256 edits are accepted",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {
+      "kind": "edits",
+      "edits": [
+        {"start": 2, "end": 2, "text": " "},
+        {"start": 6, "end": 6, "text": " "},
+        {"start": 10, "end": 10, "text": " "},
+        {"start": 14, "end": 14, "text": " "},
+        {"start": 18, "end": 18, "text": " "},
+        {"start": 22, "end": 22, "text": " "},
+        {"start": 26, "end": 26, "text": " "},
+        {"start": 30, "end": 30, "text": " "},
+        {"start": 34, "end": 34, "text": " "},
+        {"start": 38, "end": 38, "text": " "},
+        {"start": 42, "end": 42, "text": " "},
+        {"start": 46, "end": 46, "text": " "},
+        {"start": 50, "end": 50, "text": " "},
+        {"start": 54, "end": 54, "text": " "},
+        {"start": 58, "end": 58, "text": " "},
+        {"start": 62, "end": 62, "text": " "},
+        {"start": 66, "end": 66, "text": " "},
+        {"start": 70, "end": 70, "text": " "},
+        {"start": 74, "end": 74, "text": " "},
+        {"start": 78, "end": 78, "text": " "},
+        {"start": 82, "end": 82, "text": " "},
+        {"start": 86, "end": 86, "text": " "},
+        {"start": 90, "end": 90, "text": " "},
+        {"start": 94, "end": 94, "text": " "},
+        {"start": 98, "end": 98, "text": " "},
+        {"start": 102, "end": 102, "text": " "},
+        {"start": 106, "end": 106, "text": " "},
+        {"start": 110, "end": 110, "text": " "},
+        {"start": 114, "end": 114, "text": " "},
+        {"start": 118, "end": 118, "text": " "},
+        {"start": 122, "end": 122, "text": " "},
+        {"start": 126, "end": 126, "text": " "},
+        {"start": 130, "end": 130, "text": " "},
+        {"start": 134, "end": 134, "text": " "},
+        {"start": 138, "end": 138, "text": " "},
+        {"start": 142, "end": 142, "text": " "},
+        {"start": 146, "end": 146, "text": " "},
+        {"start": 150, "end": 150, "text": " "},
+        {"start": 154, "end": 154, "text": " "},
+        {"start": 158, "end": 158, "text": " "},
+        {"start": 162, "end": 162, "text": " "},
+        {"start": 166, "end": 166, "text": " "},
+        {"start": 170, "end": 170, "text": " "},
+        {"start": 174, "end": 174, "text": " "},
+        {"start": 178, "end": 178, "text": " "},
+        {"start": 182, "end": 182, "text": " "},
+        {"start": 186, "end": 186, "text": " "},
+        {"start": 190, "end": 190, "text": " "},
+        {"start": 194, "end": 194, "text": " "},
+        {"start": 198, "end": 198, "text": " "},
+        {"start": 202, "end": 202, "text": " "},
+        {"start": 206, "end": 206, "text": " "},
+        {"start": 210, "end": 210, "text": " "},
+        {"start": 214, "end": 214, "text": " "},
+        {"start": 218, "end": 218, "text": " "},
+        {"start": 222, "end": 222, "text": " "},
+        {"start": 226, "end": 226, "text": " "},
+        {"start": 230, "end": 230, "text": " "},
+        {"start": 234, "end": 234, "text": " "},
+        {"start": 238, "end": 238, "text": " "},
+        {"start": 242, "end": 242, "text": " "},
+        {"start": 246, "end": 246, "text": " "},
+        {"start": 250, "end": 250, "text": " "},
+        {"start": 254, "end": 254, "text": " "},
+        {"start": 258, "end": 258, "text": " "},
+        {"start": 262, "end": 262, "text": " "},
+        {"start": 266, "end": 266, "text": " "},
+        {"start": 270, "end": 270, "text": " "},
+        {"start": 274, "end": 274, "text": " "},
+        {"start": 278, "end": 278, "text": " "},
+        {"start": 282, "end": 282, "text": " "},
+        {"start": 286, "end": 286, "text": " "},
+        {"start": 290, "end": 290, "text": " "},
+        {"start": 294, "end": 294, "text": " "},
+        {"start": 298, "end": 298, "text": " "},
+        {"start": 302, "end": 302, "text": " "},
+        {"start": 306, "end": 306, "text": " "},
+        {"start": 310, "end": 310, "text": " "},
+        {"start": 314, "end": 314, "text": " "},
+        {"start": 318, "end": 318, "text": " "},
+        {"start": 322, "end": 322, "text": " "},
+        {"start": 326, "end": 326, "text": " "},
+        {"start": 330, "end": 330, "text": " "},
+        {"start": 334, "end": 334, "text": " "},
+        {"start": 338, "end": 338, "text": " "},
+        {"start": 342, "end": 342, "text": " "},
+        {"start": 346, "end": 346, "text": " "},
+        {"start": 350, "end": 350, "text": " "},
+        {"start": 354, "end": 354, "text": " "},
+        {"start": 358, "end": 358, "text": " "},
+        {"start": 362, "end": 362, "text": " "},
+        {"start": 366, "end": 366, "text": " "},
+        {"start": 370, "end": 370, "text": " "},
+        {"start": 374, "end": 374, "text": " "},
+        {"start": 378, "end": 378, "text": " "},
+        {"start": 382, "end": 382, "text": " "},
+        {"start": 386, "end": 386, "text": " "},
+        {"start": 390, "end": 390, "text": " "},
+        {"start": 394, "end": 394, "text": " "},
+        {"start": 398, "end": 398, "text": " "},
+        {"start": 402, "end": 402, "text": " "},
+        {"start": 406, "end": 406, "text": " "},
+        {"start": 410, "end": 410, "text": " "},
+        {"start": 414, "end": 414, "text": " "},
+        {"start": 418, "end": 418, "text": " "},
+        {"start": 422, "end": 422, "text": " "},
+        {"start": 426, "end": 426, "text": " "},
+        {"start": 430, "end": 430, "text": " "},
+        {"start": 434, "end": 434, "text": " "},
+        {"start": 438, "end": 438, "text": " "},
+        {"start": 442, "end": 442, "text": " "},
+        {"start": 446, "end": 446, "text": " "},
+        {"start": 450, "end": 450, "text": " "},
+        {"start": 454, "end": 454, "text": " "},
+        {"start": 458, "end": 458, "text": " "},
+        {"start": 462, "end": 462, "text": " "},
+        {"start": 466, "end": 466, "text": " "},
+        {"start": 470, "end": 470, "text": " "},
+        {"start": 474, "end": 474, "text": " "},
+        {"start": 478, "end": 478, "text": " "},
+        {"start": 482, "end": 482, "text": " "},
+        {"start": 486, "end": 486, "text": " "},
+        {"start": 490, "end": 490, "text": " "},
+        {"start": 494, "end": 494, "text": " "},
+        {"start": 498, "end": 498, "text": " "},
+        {"start": 502, "end": 502, "text": " "},
+        {"start": 506, "end": 506, "text": " "},
+        {"start": 510, "end": 510, "text": " "},
+        {"start": 514, "end": 514, "text": " "},
+        {"start": 518, "end": 518, "text": " "},
+        {"start": 522, "end": 522, "text": " "},
+        {"start": 526, "end": 526, "text": " "},
+        {"start": 530, "end": 530, "text": " "},
+        {"start": 534, "end": 534, "text": " "},
+        {"start": 538, "end": 538, "text": " "},
+        {"start": 542, "end": 542, "text": " "},
+        {"start": 546, "end": 546, "text": " "},
+        {"start": 550, "end": 550, "text": " "},
+        {"start": 554, "end": 554, "text": " "},
+        {"start": 558, "end": 558, "text": " "},
+        {"start": 562, "end": 562, "text": " "},
+        {"start": 566, "end": 566, "text": " "},
+        {"start": 570, "end": 570, "text": " "},
+        {"start": 574, "end": 574, "text": " "},
+        {"start": 578, "end": 578, "text": " "},
+        {"start": 582, "end": 582, "text": " "},
+        {"start": 586, "end": 586, "text": " "},
+        {"start": 590, "end": 590, "text": " "},
+        {"start": 594, "end": 594, "text": " "},
+        {"start": 598, "end": 598, "text": " "},
+        {"start": 602, "end": 602, "text": " "},
+        {"start": 606, "end": 606, "text": " "},
+        {"start": 610, "end": 610, "text": " "},
+        {"start": 614, "end": 614, "text": " "},
+        {"start": 618, "end": 618, "text": " "},
+        {"start": 622, "end": 622, "text": " "},
+        {"start": 626, "end": 626, "text": " "},
+        {"start": 630, "end": 630, "text": " "},
+        {"start": 634, "end": 634, "text": " "},
+        {"start": 638, "end": 638, "text": " "},
+        {"start": 642, "end": 642, "text": " "},
+        {"start": 646, "end": 646, "text": " "},
+        {"start": 650, "end": 650, "text": " "},
+        {"start": 654, "end": 654, "text": " "},
+        {"start": 658, "end": 658, "text": " "},
+        {"start": 662, "end": 662, "text": " "},
+        {"start": 666, "end": 666, "text": " "},
+        {"start": 670, "end": 670, "text": " "},
+        {"start": 674, "end": 674, "text": " "},
+        {"start": 678, "end": 678, "text": " "},
+        {"start": 682, "end": 682, "text": " "},
+        {"start": 686, "end": 686, "text": " "},
+        {"start": 690, "end": 690, "text": " "},
+        {"start": 694, "end": 694, "text": " "},
+        {"start": 698, "end": 698, "text": " "},
+        {"start": 702, "end": 702, "text": " "},
+        {"start": 706, "end": 706, "text": " "},
+        {"start": 710, "end": 710, "text": " "},
+        {"start": 714, "end": 714, "text": " "},
+        {"start": 718, "end": 718, "text": " "},
+        {"start": 722, "end": 722, "text": " "},
+        {"start": 726, "end": 726, "text": " "},
+        {"start": 730, "end": 730, "text": " "},
+        {"start": 734, "end": 734, "text": " "},
+        {"start": 738, "end": 738, "text": " "},
+        {"start": 742, "end": 742, "text": " "},
+        {"start": 746, "end": 746, "text": " "},
+        {"start": 750, "end": 750, "text": " "},
+        {"start": 754, "end": 754, "text": " "},
+        {"start": 758, "end": 758, "text": " "},
+        {"start": 762, "end": 762, "text": " "},
+        {"start": 766, "end": 766, "text": " "},
+        {"start": 770, "end": 770, "text": " "},
+        {"start": 774, "end": 774, "text": " "},
+        {"start": 778, "end": 778, "text": " "},
+        {"start": 782, "end": 782, "text": " "},
+        {"start": 786, "end": 786, "text": " "},
+        {"start": 790, "end": 790, "text": " "},
+        {"start": 794, "end": 794, "text": " "},
+        {"start": 798, "end": 798, "text": " "},
+        {"start": 802, "end": 802, "text": " "},
+        {"start": 806, "end": 806, "text": " "},
+        {"start": 810, "end": 810, "text": " "},
+        {"start": 814, "end": 814, "text": " "},
+        {"start": 818, "end": 818, "text": " "},
+        {"start": 822, "end": 822, "text": " "},
+        {"start": 826, "end": 826, "text": " "},
+        {"start": 830, "end": 830, "text": " "},
+        {"start": 834, "end": 834, "text": " "},
+        {"start": 838, "end": 838, "text": " "},
+        {"start": 842, "end": 842, "text": " "},
+        {"start": 846, "end": 846, "text": " "},
+        {"start": 850, "end": 850, "text": " "},
+        {"start": 854, "end": 854, "text": " "},
+        {"start": 858, "end": 858, "text": " "},
+        {"start": 862, "end": 862, "text": " "},
+        {"start": 866, "end": 866, "text": " "},
+        {"start": 870, "end": 870, "text": " "},
+        {"start": 874, "end": 874, "text": " "},
+        {"start": 878, "end": 878, "text": " "},
+        {"start": 882, "end": 882, "text": " "},
+        {"start": 886, "end": 886, "text": " "},
+        {"start": 890, "end": 890, "text": " "},
+        {"start": 894, "end": 894, "text": " "},
+        {"start": 898, "end": 898, "text": " "},
+        {"start": 902, "end": 902, "text": " "},
+        {"start": 906, "end": 906, "text": " "},
+        {"start": 910, "end": 910, "text": " "},
+        {"start": 914, "end": 914, "text": " "},
+        {"start": 918, "end": 918, "text": " "},
+        {"start": 922, "end": 922, "text": " "},
+        {"start": 926, "end": 926, "text": " "},
+        {"start": 930, "end": 930, "text": " "},
+        {"start": 934, "end": 934, "text": " "},
+        {"start": 938, "end": 938, "text": " "},
+        {"start": 942, "end": 942, "text": " "},
+        {"start": 946, "end": 946, "text": " "},
+        {"start": 950, "end": 950, "text": " "},
+        {"start": 954, "end": 954, "text": " "},
+        {"start": 958, "end": 958, "text": " "},
+        {"start": 962, "end": 962, "text": " "},
+        {"start": 966, "end": 966, "text": " "},
+        {"start": 970, "end": 970, "text": " "},
+        {"start": 974, "end": 974, "text": " "},
+        {"start": 978, "end": 978, "text": " "},
+        {"start": 982, "end": 982, "text": " "},
+        {"start": 986, "end": 986, "text": " "},
+        {"start": 990, "end": 990, "text": " "},
+        {"start": 994, "end": 994, "text": " "},
+        {"start": 998, "end": 998, "text": " "},
+        {"start": 1002, "end": 1002, "text": " "},
+        {"start": 1006, "end": 1006, "text": " "},
+        {"start": 1010, "end": 1010, "text": " "},
+        {"start": 1014, "end": 1014, "text": " "},
+        {"start": 1018, "end": 1018, "text": " "},
+        {"start": 1022, "end": 1022, "text": " "}
+      ]
+    },
+    "expectedText": "中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n中文 A\n"
+  },
+  {
+    "name": "A 257th edit rejects the entire document without partial edits",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": false
+      }
+    },
+    "expectedResult": {"kind": "error", "code": "unsupported-input", "message": "Chinese Typography would make more than 256 edits. No changes were made."},
+    "expectedText": "中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n中文A\n"
+  },
+  {
+    "name": "Combined spacing and punctuation share the edit budget",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n",
+      "selection": {
+        "start": 0,
+        "end": 0
+      },
+      "params": {
+        "spacing": true,
+        "punctuation": true
+      }
+    },
+    "expectedResult": {"kind": "error", "code": "unsupported-input", "message": "Chinese Typography would make more than 256 edits. No changes were made."},
+    "expectedText": "中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n中文A版!\n"
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "name": "folra-markdown-check-build",
+  "private": true,
+  "dependencies": {
+    "binaryen": "123.0.0",
+    "fflate": "0.8.2",
+    "terser": "5.44.0"
+  }
+}

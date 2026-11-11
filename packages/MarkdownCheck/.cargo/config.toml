@@ -1,0 +1,5 @@
+# Cargo discovers this configuration when invoked from packages/MarkdownCheck.
+[build]
+target-dir = "../../.build/markdown-check-rust"
+incremental = false
+jobs = 2

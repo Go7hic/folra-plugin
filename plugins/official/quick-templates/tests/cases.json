@@ -1,0 +1,223 @@
+[
+  {
+    "name": "english-meeting-defaults-in-empty-document",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "meeting_notes", "language": "en", "title": "" }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# Meeting notes\n\n**Date:**\n\n**Attendees:**\n\n## Agenda\n\n## Decisions\n\n## Action items\n\n- [ ] Task (owner, due date)\n"
+    }
+  },
+  {
+    "name": "english-reading-title-is-trimmed-and-keeps-unicode",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "Draft",
+      "selection": { "start": 0, "end": 5 },
+      "params": { "template": "reading_notes", "language": "en", "title": "  Cafe\u0301 📚: Chapter 2  " }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# Cafe\u0301 📚: Chapter 2\n\n**Author:**\n\n## Key ideas\n\n## Quotes and page numbers\n\n## Reflections\n"
+    }
+  },
+  {
+    "name": "english-journal-whitespace-only-title",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "Draft\n",
+      "selection": { "start": 6, "end": 6 },
+      "params": { "template": "daily_journal", "language": "en", "title": " 　" }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# Daily journal\n\n**Date:**\n\n## What happened\n\n## Reflections\n\n## Tomorrow\n"
+    }
+  },
+  {
+    "name": "simplified-chinese-meeting-crlf-with-selection",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "# 草稿\r\n正文\r\n",
+      "selection": { "start": 6, "end": 8 },
+      "params": { "template": "meeting_notes", "language": "zh_hans", "title": "项目周会" }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# 项目周会\r\n\r\n**日期：**\r\n\r\n**参会人：**\r\n\r\n## 议题\r\n\r\n## 决议\r\n\r\n## 待办事项\r\n\r\n- [ ] 事项（负责人、截止日期）\r\n"
+    }
+  },
+  {
+    "name": "simplified-chinese-reading-default-title",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "# Draft\n",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "reading_notes", "language": "zh_hans", "title": "" }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# 读书笔记\n\n**作者：**\n\n## 要点\n\n## 摘录与页码\n\n## 读后感\n"
+    }
+  },
+  {
+    "name": "simplified-chinese-journal-mixed-endings-crlf-first",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "A\r\nB\nC",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "daily_journal", "language": "zh_hans", "title": "" }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# 日记\r\n\r\n**日期：**\r\n\r\n## 今日记录\r\n\r\n## 回顾\r\n\r\n## 明日计划\r\n"
+    }
+  },
+  {
+    "name": "japanese-meeting-default-title",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "meeting_notes", "language": "ja", "title": "" }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# 議事録\n\n**日付：**\n\n**出席者：**\n\n## 議題\n\n## 決定事項\n\n## 対応事項\n\n- [ ] タスク（担当者、期限）\n"
+    }
+  },
+  {
+    "name": "japanese-reading-mixed-endings-lf-first",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "A\nB\r\nC",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "reading_notes", "language": "ja", "title": "『雪国』" }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# 『雪国』\n\n**著者：**\n\n## 要点\n\n## 引用とページ番号\n\n## 感想\n"
+    }
+  },
+  {
+    "name": "japanese-journal-default-title",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "daily_journal", "language": "ja", "title": "" }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# 日記\n\n**日付：**\n\n## 今日の出来事\n\n## 振り返り\n\n## 明日の予定\n"
+    }
+  },
+  {
+    "name": "title-markdown-links-html-entities-and-heading-markers-stay-literal",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "Draft",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "daily_journal", "language": "en", "title": "# ![cover](file) <img> &copy; **bold** ##" }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# \\# \\!\\[cover\\](file) \\<img\\> \\&copy; \\*\\*bold\\*\\* \\#\\#\n\n**Date:**\n\n## What happened\n\n## Reflections\n\n## Tomorrow\n"
+    }
+  },
+  {
+    "name": "title-wiki-highlight-interpolation-and-trailing-backslash-stay-literal",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "daily_journal", "language": "en", "title": "[[wiki]] ==mark== `${title}` {{body}} \\" }
+    },
+    "expectedResult": {
+      "kind": "text",
+      "text": "# \\[\\[wiki\\]\\] \\=\\=mark\\=\\= \\`\\$\\{title\\}\\` \\{\\{body\\}\\} \\\\\n\n**Date:**\n\n## What happened\n\n## Reflections\n\n## Tomorrow\n"
+    }
+  },
+  {
+    "name": "reject-lf-section-injection",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "Draft",
+      "selection": { "start": 5, "end": 5 },
+      "params": { "template": "meeting_notes", "language": "en", "title": "Title\n## Extra section" }
+    },
+    "expectedResult": { "kind": "error", "code": "unsupported-input", "message": "Enter a single-line title without control characters." },
+    "expectedText": "Draft"
+  },
+  {
+    "name": "reject-crlf-before-trimming",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "meeting_notes", "language": "zh_hans", "title": "标题\r\n" }
+    },
+    "expectedResult": { "kind": "error", "code": "unsupported-input", "message": "请输入单行标题，标题中不能包含控制字符。" }
+  },
+  {
+    "name": "reject-bare-cr-in-title",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "reading_notes", "language": "en", "title": "Title\r## Extra section" }
+    },
+    "expectedResult": { "kind": "error", "code": "unsupported-input", "message": "Enter a single-line title without control characters." }
+  },
+  {
+    "name": "reject-unicode-line-separator",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "reading_notes", "language": "ja", "title": "前半\u2028後半" }
+    },
+    "expectedResult": { "kind": "error", "code": "unsupported-input", "message": "改行や制御文字を含まない、1 行のタイトルを入力してください。" }
+  },
+  {
+    "name": "reject-unicode-paragraph-separator",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "daily_journal", "language": "en", "title": "Title\u2029Extra" }
+    },
+    "expectedResult": { "kind": "error", "code": "unsupported-input", "message": "Enter a single-line title without control characters." }
+  },
+  {
+    "name": "reject-nel-control-character",
+    "input": {
+      "api": 2,
+      "scope": "document",
+      "text": "",
+      "selection": { "start": 0, "end": 0 },
+      "params": { "template": "daily_journal", "language": "en", "title": "Title\u0085Extra" }
+    },
+    "expectedResult": { "kind": "error", "code": "unsupported-input", "message": "Enter a single-line title without control characters." }
+  }
+]
